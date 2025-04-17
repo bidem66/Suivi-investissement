@@ -1,15 +1,99 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Suivi Investissements</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Suivi Investissement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        th {
+            background-color: #eee;
+        }
+        .gain { color: green; }
+        .loss { color: red; }
+        .neutral { color: orange; }
+    </style>
 </head>
 <body>
-  <h1>Suivi de Portefeuille</h1>
-  <div id="crypto-table"></div>
-  <div id="actions-table"></div>
-  <script src="script.js"></script>
+
+    <h1>Portefeuille Crypto (CAD)</h1>
+    <table>
+        <tr>
+            <th>Crypto</th>
+            <th>Quantité</th>
+            <th>Investi</th>
+            <th>Valeur Actuelle</th>
+            <th>Gain / Perte $</th>
+            <th>Gain / Perte %</th>
+            <th>Recommandation</th>
+        </tr>
+        <tr>
+            <td>SOL</td>
+            <td>0.988</td>
+            <td>180.00 $</td>
+            <td>175.72 $</td>
+            <td class="loss">-4.28 $</td>
+            <td class="loss">-2.38%</td>
+            <td class="neutral">Garder</td>
+        </tr>
+        <tr>
+            <td>LINK</td>
+            <td>4.94</td>
+            <td>90.00 $</td>
+            <td>85.39 $</td>
+            <td class="loss">-4.61 $</td>
+            <td class="loss">-5.12%</td>
+            <td class="neutral">Garder</td>
+        </tr>
+    </table>
+
+    <h1>Portefeuille Actions (USD)</h1>
+    <table>
+        <tr>
+            <th>Action</th>
+            <th>Quantité</th>
+            <th>Investi</th>
+            <th>Valeur Actuelle</th>
+            <th>Gain / Perte $</th>
+            <th>Gain / Perte %</th>
+            <th>Recommandation</th>
+        </tr>
+        <tr>
+            <td>NVDA</td>
+            <td>0.777</td>
+            <td>88.46 $</td>
+            <td>81.65 $</td>
+            <td class="loss">-6.81 $</td>
+            <td class="loss">-7.70%</td>
+            <td class="neutral">Garder</td>
+        </tr>
+        <tr>
+            <td>GLD</td>
+            <td>0.202</td>
+            <td>59.99 $</td>
+            <td>60.60 $</td>
+            <td class="gain">+0.61 $</td>
+            <td class="gain">+1.02%</td>
+            <td class="neutral">Garder</td>
+        </tr>
+    </table>
+
 </body>
 </html>
