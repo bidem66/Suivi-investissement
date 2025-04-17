@@ -1,154 +1,152 @@
-<style>
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Suivi Investissement</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background-color: #eee; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    #icon-refresh.spin { animation: spin 1s linear infinite; }
+  </style>
+</head>
+<body>
 
-  #icon-refresh.spin {
-    animation: spin 1s linear infinite;
-  }
-</style>
-<!-- Bouton Actualiser + Icône $ -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
-  <button onclick="rafraichirDonnees()" style="padding: 10px 20px; font-size: 16px;">Actualiser les données</button>
+  <button onclick="refreshAll()" style="padding: 10px 20px; font-size: 16px;">Actualiser les données</button>
   <div id="icon-refresh" style="font-size: 24px; color: green; display: none;">$</div>
 </div>
+
 <h2>Résumé global</h2>
-<table border="1">
+<table>
   <tr>
-    <th>Total investi</th>
-    <th>Valeur actuelle</th>
-    <th>Gain / Perte $</th>
-    <th>Gain / Perte %</th>
+    <th>Total investi</th><th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th>
   </tr>
   <tr>
     <td>1 163,00 $</td>
-    <td>1 055,93 $</td>
-    <td style="color:red;">-107,07 $</td>
-    <td style="color:red;">-9.21 %</td>
+    <td id="valeur-totale">—</td>
+    <td id="gain-total" style="color:black;">—</td>
+    <td id="gain-pct" style="color:black;">—</td>
   </tr>
 </table>
-<h2>Portefeuille Crypto (CAD)</h2>
-<table border="1">
+<h2>Portefeuille Crypto (en temps réel)</h2>
+<table id="crypto-table">
   <tr>
-    <th>Crypto</th>
-    <th>Quantité</th>
-    <th>Investi</th>
-    <th>Valeur Actuelle</th>
-    <th>Gain / Perte $</th>
-    <th>Gain / Perte %</th>
-    <th>Recommandation</th>
+    <th>Crypto</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th>
+    <th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th>
   </tr>
-  <tr><td>SOL</td><td>0.988</td><td>180.00 $</td><td>175.72 $</td><td style="color:red;">-4.28 $</td><td style="color:red;">-2.38%</td><td>Garder</td></tr>
-  <tr><td>LINK</td><td>4.94</td><td>90.00 $</td><td>85.39 $</td><td style="color:red;">-4.61 $</td><td style="color:red;">-5.12%</td><td>Garder</td></tr>
-  <tr><td>ADA</td><td>89.62</td><td>75.00 $</td><td>76.67 $</td><td style="color:green;">+1.67 $</td><td style="color:green;">+2.22%</td><td>Garder</td></tr>
-  <tr><td>DOT</td><td>13.37</td><td>65.00 $</td><td>66.43 $</td><td style="color:green;">+1.43 $</td><td style="color:green;">+2.20%</td><td>Garder</td></tr>
-  <tr><td>AVAX</td><td>1.7365</td><td>45.00 $</td><td>46.53 $</td><td style="color:green;">+1.53 $</td><td style="color:green;">+3.40%</td><td>Garder</td></tr>
-  <tr><td>PEPE</td><td>2,892,752.9</td><td>30.00 $</td><td>28.58 $</td><td style="color:red;">-1.42 $</td><td style="color:red;">-4.73%</td><td>Garder</td></tr>
+  <tr data-coin="solana" data-amount="0.988" data-invested="180" data-currency="cad"></tr>
+  <tr data-coin="chainlink" data-amount="4.94" data-invested="90" data-currency="cad"></tr>
+  <tr data-coin="cardano" data-amount="89.62" data-invested="75" data-currency="cad"></tr>
+  <tr data-coin="polkadot" data-amount="13.37" data-invested="65" data-currency="cad"></tr>
+  <tr data-coin="avalanche-2" data-amount="1.7365" data-invested="45" data-currency="cad"></tr>
+  <tr data-coin="pepe" data-amount="2892752.9" data-invested="30" data-currency="cad"></tr>
+  <tr data-coin="ethereum" data-amount="0.043058" data-invested="96.65" data-currency="usd"></tr>
 </table>
-<h2>Crypto (USD)</h2>
-<table border="1">
+<h2>Portefeuille Actions & Métaux (en temps réel)</h2>
+<table id="stock-table">
   <tr>
-    <th>Crypto</th>
-    <th>Quantité</th>
-    <th>Investi</th>
-    <th>Valeur Actuelle</th>
-    <th>Gain / Perte $</th>
-    <th>Gain / Perte %</th>
-    <th>Recommandation</th>
+    <th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th>
+    <th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th>
   </tr>
-  <tr><td>ETH</td><td>0.0431</td><td>96.65 $</td><td>94.29 $</td><td style="color:red;">-2.36 $</td><td style="color:red;">-2.44%</td><td>Garder</td></tr>
-</table>
-<h2>Portefeuille Actions / Métaux (USD)</h2>
-<table border="1">
-  <tr>
-    <th>Action</th>
-    <th>Quantité</th>
-    <th>Investi</th>
-    <th>Valeur Actuelle</th>
-    <th>Gain / Perte $</th>
-    <th>Gain / Perte %</th>
-    <th>Recommandation</th>
-  </tr>
-  <tr><td>NVDA</td><td>0.777</td><td>88.46 $</td><td>81.65 $</td><td style="color:red;">-6.81 $</td><td style="color:red;">-7.70%</td><td>Garder</td></tr>
-  <tr><td>GLD</td><td>0.202</td><td>59.99 $</td><td>60.60 $</td><td style="color:green;">+0.61 $</td><td style="color:green;">+1.02%</td><td>Garder</td></tr>
-  <tr><td>SLV</td><td>1</td><td>29.45 $</td><td>29.44 $</td><td style="color:red;">-0.01 $</td><td style="color:red;">-0.03%</td><td>Garder</td></tr>
-  <tr><td>CRM</td><td>0.227</td><td>82.01 $</td><td>57.47 $</td><td style="color:red;">-24.54 $</td><td style="color:red;">-29.92%</td><td><b style="color:red;">À risque</b></td></tr>
-  <tr><td>TSLA</td><td>0.282</td><td>101.84 $</td><td>70.65 $</td><td style="color:red;">-31.19 $</td><td style="color:red;">-30.63%</td><td><b style="color:red;">À risque</b></td></tr>
-  <tr><td>STLA</td><td>7</td><td>63.56 $</td><td>66.57 $</td><td style="color:green;">+3.01 $</td><td style="color:green;">+4.74%</td><td>Garder</td></tr>
-</table>
-<h2>Opportunités à saisir</h2>
-<table border="1">
-  <tr>
-    <th>Actif</th>
-    <th>Type</th>
-    <th>Tendance</th>
-    <th>Variation</th>
-    <th>Recommandation</th>
-  </tr>
-  <tr>
-    <td>WIF</td>
-    <td>Crypto</td>
-    <td style="color:green;">Haussière</td>
-    <td style="color:green;">+18.7 %</td>
-    <td style="color:green;"><b>Investir maintenant</b></td>
-  </tr>
-  <tr>
-    <td>TON</td>
-    <td>Crypto</td>
-    <td style="color:green;">Haussière</td>
-    <td style="color:green;">+22.5 %</td>
-    <td style="color:green;"><b>Investir maintenant</b></td>
-  </tr>
-  <tr>
-    <td>MSTR</td>
-    <td>Action</td>
-    <td style="color:green;">Montée rapide</td>
-    <td style="color:green;">+16.2 %</td>
-    <td style="color:green;"><b>Surveiller ou entrer rapidement</b></td>
-  </tr>
-</table>
-<h2>Dangers ou actifs à risque</h2>
-<table border="1">
-  <tr>
-    <th>Actif</th>
-    <th>Type</th>
-    <th>Tendance</th>
-    <th>Variation</th>
-    <th>Recommandation</th>
-  </tr>
-  <tr>
-    <td>PEPE</td>
-    <td>Crypto</td>
-    <td style="color:red;">En chute</td>
-    <td style="color:red;">-4.73 %</td>
-    <td style="color:red;"><b>Surveiller</b></td>
-  </tr>
-  <tr>
-    <td>CRM</td>
-    <td>Action</td>
-    <td style="color:red;">Baisse constante</td>
-    <td style="color:red;">-29.92 %</td>
-    <td style="color:red;"><b>À risque – Évaluer retrait</b></td>
-  </tr>
-  <tr>
-    <td>TSLA</td>
-    <td>Action</td>
-    <td style="color:red;">Grosse perte</td>
-    <td style="color:red;">-30.63 %</td>
-    <td style="color:red;"><b>À risque – Retrait à considérer</b></td>
-  </tr>
+  <tr data-symbol="TSLA" data-qty="0.1144" data-invested="30.25"></tr>
+  <tr data-symbol="GLD" data-qty="0.2546" data-invested="60.00"></tr>
+  <tr data-symbol="SLV" data-qty="1" data-invested="29.45"></tr>
+  <tr data-symbol="STLA" data-qty="7" data-invested="63.56"></tr>
+  <tr data-symbol="CRM" data-qty="0.1396" data-invested="41.00"></tr>
+  <tr data-symbol="NVDA" data-qty="0.0287" data-invested="27.00"></tr>
 </table>
 <script>
-  function rafraichirDonnees() {
+  async function rafraichirCrypto() {
     const icon = document.getElementById("icon-refresh");
     icon.style.display = "inline";
     icon.classList.add("spin");
 
-    setTimeout(() => {
-      icon.classList.remove("spin");
-      icon.style.display = "none";
-      alert("Données rafraîchies (simulation)");
-    }, 3000);
+    const rows = document.querySelectorAll('#crypto-table tr[data-coin]');
+    const coins = Array.from(rows).map(row => row.dataset.coin);
+    const currencies = [...new Set(Array.from(rows).map(row => row.dataset.currency))];
+
+    let valeurTotale = 0;
+    let totalInvesti = 0;
+
+    for (const currency of currencies) {
+      const filteredRows = Array.from(rows).filter(row => row.dataset.currency === currency);
+      const ids = filteredRows.map(row => row.dataset.coin).join(',');
+
+      const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${currency}`);
+      const data = await res.json();
+
+      for (const row of filteredRows) {
+        const coin = row.dataset.coin;
+        const qty = parseFloat(row.dataset.amount);
+        const investi = parseFloat(row.dataset.invested);
+        const curr = row.dataset.currency;
+        const prix = data[coin][curr];
+        const total = prix * qty;
+        const gain = total - investi;
+        const pct = (gain / investi * 100).toFixed(2);
+        const couleur = gain > 0 ? "green" : gain < 0 ? "red" : "black";
+
+        valeurTotale += total;
+        totalInvesti += investi;
+
+        row.innerHTML = `
+          <td>${coin.toUpperCase()}</td><td>${qty}</td><td>${investi.toFixed(2)} $</td>
+          <td>${prix.toFixed(4)} ${curr.toUpperCase()}</td><td>${total.toFixed(2)} $</td>
+          <td style="color:${couleur};">${gain.toFixed(2)} $</td><td style="color:${couleur};">${pct} %</td>`;
+      }
+    }
+
+    await rafraichirActions(valeurTotale, totalInvesti);
+    icon.classList.remove("spin");
+    icon.style.display = "none";
   }
+
+  async function rafraichirActions(valeurTotale, totalInvesti) {
+    const rows = document.querySelectorAll('#stock-table tr[data-symbol]');
+    const symbols = Array.from(rows).map(r => r.dataset.symbol).join(',');
+    const res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`);
+    const data = await res.json();
+
+    for (const row of rows) {
+      const symbol = row.dataset.symbol;
+      const qty = parseFloat(row.dataset.qty);
+      const invested = parseFloat(row.dataset.invested);
+      const stock = data.quoteResponse.result.find(x => x.symbol === symbol);
+      const price = stock.regularMarketPrice;
+      const total = qty * price;
+      const gain = total - invested;
+      const pct = (gain / invested * 100).toFixed(2);
+      const color = gain > 0 ? "green" : gain < 0 ? "red" : "black";
+
+      valeurTotale += total;
+      totalInvesti += invested;
+
+      row.innerHTML = `
+        <td>${symbol}</td><td>${qty}</td><td>${invested.toFixed(2)} $</td>
+        <td>${price.toFixed(2)} $</td><td>${total.toFixed(2)} $</td>
+        <td style="color:${color};">${gain.toFixed(2)} $</td><td style="color:${color};">${pct} %</td>`;
+    }
+
+    const totalGain = valeurTotale - totalInvesti;
+    const pctGain = (totalGain / totalInvesti * 100).toFixed(2);
+    const colorGlobal = totalGain > 0 ? "green" : totalGain < 0 ? "red" : "black";
+
+    document.getElementById("valeur-totale").innerText = valeurTotale.toFixed(2) + " $";
+    document.getElementById("gain-total").innerText = totalGain.toFixed(2) + " $";
+    document.getElementById("gain-total").style.color = colorGlobal;
+    document.getElementById("gain-pct").innerText = pctGain + " %";
+    document.getElementById("gain-pct").style.color = colorGlobal;
+  }
+
+  function refreshAll() {
+    rafraichirCrypto();
+  }
+
+  refreshAll();
+  setInterval(refreshAll, 5 * 60 * 1000);
 </script>
+</body>
+</html>
