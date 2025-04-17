@@ -1,3 +1,13 @@
+<style>
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  #icon-refresh.spin {
+    animation: spin 1s linear infinite;
+  }
+</style>
 <!-- Bouton Actualiser + Icône $ -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
   <button onclick="rafraichirDonnees()" style="padding: 10px 20px; font-size: 16px;">Actualiser les données</button>
@@ -129,3 +139,16 @@
     <td style="color:red;"><b>À risque – Retrait à considérer</b></td>
   </tr>
 </table>
+<script>
+  function rafraichirDonnees() {
+    const icon = document.getElementById("icon-refresh");
+    icon.style.display = "inline";
+    icon.classList.add("spin");
+
+    setTimeout(() => {
+      icon.classList.remove("spin");
+      icon.style.display = "none";
+      alert("Données rafraîchies (simulation)");
+    }, 3000);
+  }
+</script>
