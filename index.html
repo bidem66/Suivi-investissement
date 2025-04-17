@@ -1,129 +1,36 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Suivi Investissement</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f9f9f9;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 40px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
-        th {
-            background-color: #eee;
-        }
-        .gain { color: green; }
-        .loss { color: red; }
-        .neutral { color: orange; }
-    </style>
-</head>
-<body>
-
-    <h1>Portefeuille Crypto (CAD)</h1>
-    <table>
-        <tr>
-            <th>Crypto</th>
-            <th>Quantité</th>
-            <th>Investi</th>
-            <th>Valeur Actuelle</th>
-            <th>Gain / Perte $</th>
-            <th>Gain / Perte %</th>
-            <th>Recommandation</th>
-        </tr>
-        <tr>
-            <td>SOL</td>
-            <td>0.988</td>
-            <td>180.00 $</td>
-            <td>175.72 $</td>
-            <td class="loss">-4.28 $</td>
-            <td class="loss">-2.38%</td>
-            <td class="neutral">Garder</td>
-        </tr>
-        <tr>
-            <td>LINK</td>
-            <td>4.94</td>
-            <td>90.00 $</td>
-            <td>85.39 $</td>
-            <td class="loss">-4.61 $</td>
-            <td class="loss">-5.12%</td>
-            <td class="neutral">Garder</td>
-        </tr>
-    </table>
-
-    <h1>Portefeuille Actions (USD)</h1>
-    <table>
-        <tr>
-            <th>Action</th>
-            <th>Quantité</th>
-            <th>Investi</th>
-            <th>Valeur Actuelle</th>
-            <th>Gain / Perte $</th>
-            <th>Gain / Perte %</th>
-            <th>Recommandation</th>
-        </tr>
-        <tr>
-            <td>NVDA</td>
-            <td>0.777</td>
-            <td>88.46 $</td>
-            <td>81.65 $</td>
-            <td class="loss">-6.81 $</td>
-            <td class="loss">-7.70%</td>
-            <td class="neutral">Garder</td>
-        </tr>
-        <tr>
-            <td>GLD</td>
-            <td>0.202</td>
-            <td>59.99 $</td>
-            <td>60.60 $</td>
-            <td class="gain">+0.61 $</td>
-            <td class="gain">+1.02%</td>
-            <td class="neutral">Garder</td>
-        </tr>
-    </table>
-<h1>Opportunités à saisir</h1>
-<table>
+<h2>Portefeuille Crypto (CAD)</h2>
+<table border="1">
   <tr>
-    <th>Actif</th>
-    <th>Type</th>
-    <th>Tendance</th>
-    <th>Variation</th>
+    <th>Crypto</th>
+    <th>Quantité</th>
+    <th>Investi</th>
+    <th>Valeur Actuelle</th>
+    <th>Gain / Perte $</th>
+    <th>Gain / Perte %</th>
     <th>Recommandation</th>
   </tr>
-  <tr>
-    <td>WIF</td>
-    <td>Crypto</td>
-    <td class="gain">Haussière</td>
-    <td class="gain">+18.7 %</td>
-    <td class="gain">Investir maintenant</td>
-  </tr>
-  <tr>
-    <td>TON</td>
-    <td>Crypto</td>
-    <td class="gain">Haussière</td>
-    <td class="gain">+22.5 %</td>
-    <td class="gain">Investir maintenant</td>
-  </tr>
-  <tr>
-    <td>MSTR</td>
-    <td>Action</td>
-    <td class="gain">En montée rapide</td>
-    <td class="gain">+16.2 %</td>
-    <td class="gain">Surveiller ou entrer rapidement</td>
-  </tr>
+  <tr><td>SOL</td><td>0.988</td><td>180.00 $</td><td>175.72 $</td><td style="color:red;">-4.28 $</td><td style="color:red;">-2.38%</td><td>Garder</td></tr>
+  <tr><td>LINK</td><td>4.94</td><td>90.00 $</td><td>85.39 $</td><td style="color:red;">-4.61 $</td><td style="color:red;">-5.12%</td><td>Garder</td></tr>
+  <tr><td>ADA</td><td>89.62</td><td>75.00 $</td><td>76.67 $</td><td style="color:green;">+1.67 $</td><td style="color:green;">+2.22%</td><td>Garder</td></tr>
+  <tr><td>DOT</td><td>13.37</td><td>65.00 $</td><td>66.43 $</td><td style="color:green;">+1.43 $</td><td style="color:green;">+2.20%</td><td>Garder</td></tr>
+  <tr><td>AVAX</td><td>1.7365</td><td>45.00 $</td><td>46.53 $</td><td style="color:green;">+1.53 $</td><td style="color:green;">+3.40%</td><td>Garder</td></tr>
+  <tr><td>PEPE</td><td>2,892,752.9</td><td>45.00 $</td><td>28.58 $</td><td style="color:red;">-16.42 $</td><td style="color:red;">-36.49%</td><td><b style="color:red;">À risque</b></td></tr>
 </table>
-</body>
-</html>
+
+<h2>Portefeuille Actions (USD)</h2>
+<table border="1">
+  <tr>
+    <th>Action</th>
+    <th>Quantité</th>
+    <th>Investi</th>
+    <th>Valeur Actuelle</th>
+    <th>Gain / Perte $</th>
+    <th>Gain / Perte %</th>
+    <th>Recommandation</th>
+  </tr>
+  <tr><td>NVDA</td><td>0.777</td><td>88.46 $</td><td>81.65 $</td><td style="color:red;">-6.81 $</td><td style="color:red;">-7.70%</td><td>Garder</td></tr>
+  <tr><td>GLD</td><td>0.202</td><td>59.99 $</td><td>60.60 $</td><td style="color:green;">+0.61 $</td><td style="color:green;">+1.02%</td><td>Garder</td></tr>
+  <tr><td>SLV</td><td>1</td><td>29.45 $</td><td>29.44 $</td><td style="color:red;">-0.01 $</td><td style="color:red;">-0.03%</td><td>Garder</td></tr>
+  <tr><td>CRM</td><td>0.227</td><td>82.01 $</td><td>57.47 $</td><td style="color:red;">-24.54 $</td><td style="color:red;">-29.92%</td><td><b style="color:red;">À risque</b></td></tr>
+  <tr><td>TSLA</td><td>0.282</td><td>101.84 $</td><td>70.65 $</td><td style="color:red;">-31.19 $</td><td style="color:red;">-30.63%</td><td><b style="color:red;">À risque</b></td></tr>
+</table>
