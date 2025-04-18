@@ -10,10 +10,8 @@
       await OneSignal.init({
         appId: "c5bd46ca-82c9-4493-b9a7-3813d3eccd03",
         safari_web_id: "web.onesignal.auto.21eb64f1-a307-4b53-9fa9-5af0b410a31b",
-        notifyButton: {
-          enable: true,
-        },
-        subdomainName: "pushbidm",
+        notifyButton: { enable: true },
+        subdomainName: "pushbidm"
       });
     });
   </script>
@@ -23,6 +21,7 @@
     <button onclick="refreshData()" class="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Actualiser les données</button><section id="resume-global"></section>
 <section id="tableau-crypto"></section>
 <section id="tableau-actions"></section>
+<section id="opportunites"></section>
 
 <script>
   const data = {
@@ -48,6 +47,13 @@
       { nom: "CRM", quantite: 0.658, investi: 82.01, prixUnitaire: "124.6 USD", valeur: 80.15 },
       { nom: "TSLA", quantite: 0.419, investi: 101.84, prixUnitaire: "243.0 USD", valeur: 99.42 },
       { nom: "SLV", quantite: 1, investi: 29.45, prixUnitaire: "29.45 USD", valeur: 30.10 }
+    ],
+    opportunites: [
+      { nom: "TON", variation: "+21.3%", recommandation: "Acheter maintenant" },
+      { nom: "WIF", variation: "+18.6%", recommandation: "Surveiller" },
+      { nom: "ARB", variation: "+20.1%", recommandation: "Acheter maintenant" },
+      { nom: "MATIC", variation: "+17.5%", recommandation: "Surveiller" },
+      { nom: "RNDR", variation: "+22.7%", recommandation: "Acheter maintenant" }
     ]
   };
 
@@ -55,8 +61,24 @@
     return valeur.toFixed(2) + ' $';
   }
 
+  function verifierAlertesTousActifs(liste) {
+    liste.forEach(actif => {
+      const gain = actif.valeur - actif.investi;
+      const gainPct = (gain / actif.investi) * 100;
+      if (gainPct >= 15) {
+        OneSignal.sendSelfNotification("Explosion en cours !", `${actif.nom} est en hausse de ${gainPct.toFixed(1)} %`, null, null);
+      } else if (gainPct <= -10) {
+        OneSignal.sendSelfNotification("Chute importante !", `${actif.nom} est en baisse de ${gainPct.toFixed(1)} %`, null, null);
+      }
+    });
+  }
+
+  function detecterOpportunites() {
+    OneSignal.sendSelfNotification("Nouvelle opportunité d'achat !", "Un actif pourrait bondir de +20% dans les prochaines heures.", null, null);
+  }
+
   function render() {
-    const { resume, cryptos, actions } = data;
+    const { resume, cryptos, actions, opportunites } = data;
 
     const resumeHTML = `
       <h2 class="text-xl font-semibold mb-2">Résumé global</h2>
@@ -100,6 +122,13 @@
       </tr>`;
     }).join('');
 
+    const opportunitesHTML = opportunites.map(o => `
+      <tr>
+        <td>${o.nom}</td>
+        <td>${o.variation}</td>
+        <td class="${o.recommandation === 'Acheter maintenant' ? 'text-green-600' : 'text-yellow-600'}">${o.recommandation}</td>
+      </tr>`).join('');
+
     document.getElementById('resume-global').innerHTML = resumeHTML;
     document.getElementById('tableau-crypto').innerHTML = `
       <h2 class="text-xl font-semibold mt-6 mb-2">Portefeuille Crypto</h2>
@@ -114,6 +143,17 @@
         <thead><tr class="bg-gray-200"><th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr></thead>
         <tbody>${tableauActions}</tbody>
       </table>`;
+
+    document.getElementById('opportunites').innerHTML = `
+      <h2 class="text-xl font-semibold mt-6 mb-2">Opportunités du moment</h2>
+      <table class="table-auto w-full text-center border">
+        <thead><tr class="bg-gray-200"><th>Actif</th><th>Variation</th><th>Recommandation</th></tr></thead>
+        <tbody>${opportunitesHTML}</tbody>
+      </table>`;
+
+    verifierAlertesTousActifs(cryptos);
+    verifierAlertesTousActifs(actions);
+    detecterOpportunites();
   }
 
   function refreshData() {
