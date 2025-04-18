@@ -1,42 +1,38 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Suivi Investissement</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
     th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
     th { background-color: #eee; }
+    .alertes { margin-bottom: 30px; }
+    .alerte-rouge { background: #ffe6e6; color: #b30000; padding: 10px; margin: 5px 0; }
+    .alerte-orange { background: #fff4cc; color: #cc7a00; padding: 10px; margin: 5px 0; }
+    .alerte-verte { background: #e6ffe6; color: #007a00; padding: 10px; margin: 5px 0; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     #icon-refresh.spin { animation: spin 1s linear infinite; }
   </style>
 </head>
 <body>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+<h2>Suivi investissement</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
   <button onclick="refreshAll()" style="padding: 10px 20px; font-size: 16px;">Actualiser les données</button>
   <div id="icon-refresh" style="font-size: 24px; color: green; display: none;">$</div>
 </div>
 
 <h2>Résumé global</h2>
 <table>
-  <tr>
-    <th>Total investi</th><th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th>
-  </tr>
-  <tr>
-    <td>1 163,00 $</td>
-    <td id="valeur-totale">—</td>
-    <td id="gain-total" style="color:black;">—</td>
-    <td id="gain-pct" style="color:black;">—</td>
-  </tr>
+  <tr><th>Total investi</th><th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th></tr>
+  <tr><td>1 163,00 $</td><td id="valeur-totale">—</td><td id="gain-total">—</td><td id="gain-pct">—</td></tr>
 </table>
-<h2>Portefeuille Crypto (en temps réel)</h2>
+
+<h2>Portefeuille Crypto</h2>
 <table id="crypto-table">
-  <tr>
-    <th>Crypto</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th>
-    <th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th>
-  </tr>
+  <tr><th>Crypto</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr>
   <tr data-coin="solana" data-amount="0.988" data-invested="180" data-currency="cad"></tr>
   <tr data-coin="chainlink" data-amount="4.94" data-invested="90" data-currency="cad"></tr>
   <tr data-coin="cardano" data-amount="89.62" data-invested="75" data-currency="cad"></tr>
@@ -45,12 +41,11 @@
   <tr data-coin="pepe" data-amount="2892752.9" data-invested="30" data-currency="cad"></tr>
   <tr data-coin="ethereum" data-amount="0.043058" data-invested="96.65" data-currency="usd"></tr>
 </table>
-<h2>Portefeuille Actions & Métaux (en temps réel)</h2>
+<div id="crypto-alerts" class="alertes"></div>
+
+<h2>Portefeuille Actions & Métaux</h2>
 <table id="stock-table">
-  <tr>
-    <th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th>
-    <th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th>
-  </tr>
+  <tr><th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr>
   <tr data-symbol="TSLA" data-qty="0.1144" data-invested="30.25"></tr>
   <tr data-symbol="GLD" data-qty="0.2546" data-invested="60.00"></tr>
   <tr data-symbol="SLV" data-qty="1" data-invested="29.45"></tr>
@@ -58,95 +53,105 @@
   <tr data-symbol="CRM" data-qty="0.1396" data-invested="41.00"></tr>
   <tr data-symbol="NVDA" data-qty="0.0287" data-invested="27.00"></tr>
 </table>
+<div id="stock-alerts" class="alertes"></div>
+
 <script>
+  function afficherAlerte(container, message, type) {
+    const div = document.createElement("div");
+    div.className = "alerte-" + type;
+    div.textContent = message;
+    container.appendChild(div);
+  }
+
   async function rafraichirCrypto() {
     const icon = document.getElementById("icon-refresh");
     icon.style.display = "inline";
     icon.classList.add("spin");
+    document.getElementById("crypto-alerts").innerHTML = "";
 
     const rows = document.querySelectorAll('#crypto-table tr[data-coin]');
     const coins = Array.from(rows).map(row => row.dataset.coin);
     const currencies = [...new Set(Array.from(rows).map(row => row.dataset.currency))];
-
-    let valeurTotale = 0;
-    let totalInvesti = 0;
+    let valeurTotale = 0, totalInvesti = 0;
 
     for (const currency of currencies) {
-      const filteredRows = Array.from(rows).filter(row => row.dataset.currency === currency);
-      const ids = filteredRows.map(row => row.dataset.coin).join(',');
-
+      const filtered = Array.from(rows).filter(r => r.dataset.currency === currency);
+      const ids = filtered.map(r => r.dataset.coin).join(',');
       const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${currency}`);
       const data = await res.json();
 
-      for (const row of filteredRows) {
+      for (const row of filtered) {
         const coin = row.dataset.coin;
         const qty = parseFloat(row.dataset.amount);
         const investi = parseFloat(row.dataset.invested);
-        const curr = row.dataset.currency;
-        const prix = data[coin][curr];
-        const total = prix * qty;
-        const gain = total - investi;
+        const prix = data[coin][currency];
+        const valActuelle = prix * qty;
+        const gain = valActuelle - investi;
         const pct = (gain / investi * 100).toFixed(2);
         const couleur = gain > 0 ? "green" : gain < 0 ? "red" : "black";
 
-        valeurTotale += total;
-        totalInvesti += investi;
+        valeurTotale += valActuelle; totalInvesti += investi;
 
         row.innerHTML = `
           <td>${coin.toUpperCase()}</td><td>${qty}</td><td>${investi.toFixed(2)} $</td>
-          <td>${prix.toFixed(4)} ${curr.toUpperCase()}</td><td>${total.toFixed(2)} $</td>
+          <td>${prix.toFixed(4)} ${currency.toUpperCase()}</td><td>${valActuelle.toFixed(2)} $</td>
           <td style="color:${couleur};">${gain.toFixed(2)} $</td><td style="color:${couleur};">${pct} %</td>`;
+
+        const alerts = document.getElementById("crypto-alerts");
+        if (pct <= -20) afficherAlerte(alerts, `${coin.toUpperCase()} : Danger de crash – Vendre immédiatement.`, "rouge");
+        else if (pct <= -10) afficherAlerte(alerts, `${coin.toUpperCase()} : Baisse importante – Surveiller.`, "orange");
+        else if (pct >= 15) afficherAlerte(alerts, `${coin.toUpperCase()} : Forte hausse – Renforcer ou vendre.`, "verte");
       }
     }
-
     await rafraichirActions(valeurTotale, totalInvesti);
     icon.classList.remove("spin");
     icon.style.display = "none";
   }
 
   async function rafraichirActions(valeurTotale, totalInvesti) {
+    document.getElementById("stock-alerts").innerHTML = "";
     const rows = document.querySelectorAll('#stock-table tr[data-symbol]');
     const symbols = Array.from(rows).map(r => r.dataset.symbol).join(',');
     const res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`);
     const data = await res.json();
 
     for (const row of rows) {
-      const symbol = row.dataset.symbol;
+      const sym = row.dataset.symbol;
       const qty = parseFloat(row.dataset.qty);
       const invested = parseFloat(row.dataset.invested);
-      const stock = data.quoteResponse.result.find(x => x.symbol === symbol);
+      const stock = data.quoteResponse.result.find(x => x.symbol === sym);
       const price = stock.regularMarketPrice;
-      const total = qty * price;
-      const gain = total - invested;
+      const valActuelle = price * qty;
+      const gain = valActuelle - invested;
       const pct = (gain / invested * 100).toFixed(2);
-      const color = gain > 0 ? "green" : gain < 0 ? "red" : "black";
+      const couleur = gain > 0 ? "green" : gain < 0 ? "red" : "black";
 
-      valeurTotale += total;
-      totalInvesti += invested;
+      valeurTotale += valActuelle; totalInvesti += invested;
 
       row.innerHTML = `
-        <td>${symbol}</td><td>${qty}</td><td>${invested.toFixed(2)} $</td>
-        <td>${price.toFixed(2)} $</td><td>${total.toFixed(2)} $</td>
-        <td style="color:${color};">${gain.toFixed(2)} $</td><td style="color:${color};">${pct} %</td>`;
+        <td>${sym}</td><td>${qty}</td><td>${invested.toFixed(2)} $</td>
+        <td>${price.toFixed(2)} $</td><td>${valActuelle.toFixed(2)} $</td>
+        <td style="color:${couleur};">${gain.toFixed(2)} $</td><td style="color:${couleur};">${pct} %</td>`;
+
+      const alerts = document.getElementById("stock-alerts");
+      if (pct <= -20) afficherAlerte(alerts, `${sym} : Danger de crash – Vendre immédiatement.`, "rouge");
+      else if (pct <= -10) afficherAlerte(alerts, `${sym} : Baisse importante – Réévaluer.`, "orange");
+      else if (pct >= 15) afficherAlerte(alerts, `${sym} : Forte hausse – Renforcer ou prendre profit.`, "verte");
     }
 
-    const totalGain = valeurTotale - totalInvesti;
-    const pctGain = (totalGain / totalInvesti * 100).toFixed(2);
-    const colorGlobal = totalGain > 0 ? "green" : totalGain < 0 ? "red" : "black";
+    const gainTotal = valeurTotale - totalInvesti;
+    const pctTotal = (gainTotal / totalInvesti * 100).toFixed(2);
+    const couleurGlobal = gainTotal > 0 ? "green" : gainTotal < 0 ? "red" : "black";
 
     document.getElementById("valeur-totale").innerText = valeurTotale.toFixed(2) + " $";
-    document.getElementById("gain-total").innerText = totalGain.toFixed(2) + " $";
-    document.getElementById("gain-total").style.color = colorGlobal;
-    document.getElementById("gain-pct").innerText = pctGain + " %";
-    document.getElementById("gain-pct").style.color = colorGlobal;
+    document.getElementById("gain-total").innerText = gainTotal.toFixed(2) + " $";
+    document.getElementById("gain-total").style.color = couleurGlobal;
+    document.getElementById("gain-pct").innerText = pctTotal + " %";
+    document.getElementById("gain-pct").style.color = couleurGlobal;
   }
 
-  function refreshAll() {
-    rafraichirCrypto();
-  }
-
-  refreshAll();
-  setInterval(refreshAll, 5 * 60 * 1000);
+  function refreshAll() { rafraichirCrypto(); }
+  refreshAll(); setInterval(refreshAll, 5 * 60 * 1000);
 </script>
 </body>
 </html>
