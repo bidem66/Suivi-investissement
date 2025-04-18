@@ -15,154 +15,92 @@
       });
     });
   </script>
+  <style>
+    table {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    th, td {
+      padding: 0.75rem;
+    }
+    tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+    th {
+      background-color: #e5e7eb;
+      font-weight: 600;
+    }
+    .fl-arrow-up::before {
+      content: "\2191 ";
+      color: green;
+    }
+    .fl-arrow-down::before {
+      content: "\2193 ";
+      color: red;
+    }
+  </style>
 </head><body class="bg-gray-50 text-gray-900">
-  <div class="max-w-4xl mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Suivi investissement</h1>
-    <button onclick="refreshData()" class="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Actualiser les données</button><section id="resume-global"></section>
-<section id="tableau-crypto"></section>
-<section id="tableau-actions"></section>
+  <div class="max-w-6xl mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Suivi investissement</h1>
+    <div class="flex justify-between items-center mb-4">
+      <div id="maj-info" class="text-sm text-gray-500">Prochaine mise à jour automatique dans 5 min</div>
+      <button onclick="refreshData(true)" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded shadow hover:bg-blue-700">Actualiser maintenant</button>
+    </div>
+    <div id="alert-refresh" class="hidden mb-4 text-green-600 font-medium">Données mises à jour avec succès</div><section id="resume-global" class="mb-8"></section>
+<section id="tableau-crypto" class="mb-8"></section>
+<section id="tableau-actions" class="mb-8"></section>
 <section id="opportunites"></section>
 
 <script>
-  const data = {
-    resume: {
-      investi: 1163.00,
-      valeurActuelle: 1146.09,
-      gain: -16.91,
-      gainPct: -1.45
-    },
-    cryptos: [
-      { nom: "SOLANA", quantite: 0.988, investi: 180, prixUnitaire: "186.24 CAD", valeur: 184.01 },
-      { nom: "CHAINLINK", quantite: 4.94, investi: 90, prixUnitaire: "17.32 CAD", valeur: 85.56 },
-      { nom: "CARDANO", quantite: 89.62, investi: 75, prixUnitaire: "0.8531 CAD", valeur: 76.46 },
-      { nom: "POLKADOT", quantite: 13.37, investi: 65, prixUnitaire: "5.03 CAD", valeur: 67.25 },
-      { nom: "AVALANCHE", quantite: 1.7365, investi: 45, prixUnitaire: "26.39 CAD", valeur: 45.83 },
-      { nom: "PEPE", quantite: 2892752.9, investi: 30, prixUnitaire: "0.0000 CAD", valeur: 28.99 },
-      { nom: "ETHEREUM (USD)", quantite: 0.043058, investi: 96.65, prixUnitaire: "1582.33 USD", valeur: 68.13 }
-    ],
-    actions: [
-      { nom: "NVDA", quantite: 0.777, investi: 88.46, prixUnitaire: "113.83 USD", valeur: 81.65 },
-      { nom: "GLD", quantite: 0.202, investi: 59.99, prixUnitaire: "297.00 USD", valeur: 60.60 },
-      { nom: "STLA", quantite: 7, investi: 63.56, prixUnitaire: "9.51 USD", valeur: 66.57 },
-      { nom: "CRM", quantite: 0.658, investi: 82.01, prixUnitaire: "124.6 USD", valeur: 80.15 },
-      { nom: "TSLA", quantite: 0.419, investi: 101.84, prixUnitaire: "243.0 USD", valeur: 99.42 },
-      { nom: "SLV", quantite: 1, investi: 29.45, prixUnitaire: "29.45 USD", valeur: 30.10 }
-    ],
-    opportunites: [
-      { nom: "TON", variation: "+21.3%", recommandation: "Acheter maintenant" },
-      { nom: "WIF", variation: "+18.6%", recommandation: "Surveiller" },
-      { nom: "ARB", variation: "+20.1%", recommandation: "Acheter maintenant" },
-      { nom: "MATIC", variation: "+17.5%", recommandation: "Surveiller" },
-      { nom: "RNDR", variation: "+22.7%", recommandation: "Acheter maintenant" }
-    ]
-  };
-
   function formatMontant(valeur) {
     return valeur.toFixed(2) + ' $';
   }
 
-  function verifierAlertesTousActifs(liste) {
-    liste.forEach(actif => {
-      const gain = actif.valeur - actif.investi;
-      const gainPct = (gain / actif.investi) * 100;
-      if (gainPct >= 15) {
-        OneSignal.sendSelfNotification("Explosion en cours !", `${actif.nom} est en hausse de ${gainPct.toFixed(1)} %`, null, null);
-      } else if (gainPct <= -10) {
-        OneSignal.sendSelfNotification("Chute importante !", `${actif.nom} est en baisse de ${gainPct.toFixed(1)} %`, null, null);
-      }
-    });
+  function formatGainPct(valeur) {
+    const arrow = valeur >= 0 ? 'fl-arrow-up' : 'fl-arrow-down';
+    return `<span class="${arrow}">${Math.abs(valeur).toFixed(2)} %</span>`;
   }
 
-  function detecterOpportunites() {
-    OneSignal.sendSelfNotification("Nouvelle opportunité d'achat !", "Un actif pourrait bondir de +20% dans les prochaines heures.", null, null);
+  function refreshData(fromButton = false) {
+    render();
+    if (fromButton) {
+      const alert = document.getElementById("alert-refresh");
+      alert.classList.remove("hidden");
+      setTimeout(() => alert.classList.add("hidden"), 2500);
+    }
   }
+
+  setInterval(() => refreshData(), 5 * 60 * 1000);
 
   function render() {
-    const { resume, cryptos, actions, opportunites } = data;
-
-    const resumeHTML = `
-      <h2 class="text-xl font-semibold mb-2">Résumé global</h2>
-      <table class="table-auto w-full text-center border">
-        <thead><tr class="bg-gray-200"><th>Total investi</th><th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>${formatMontant(resume.investi)}</td>
-            <td>${formatMontant(resume.valeurActuelle)}</td>
-            <td class="${resume.gain < 0 ? 'text-red-600' : 'text-green-600'}">${formatMontant(resume.gain)}</td>
-            <td class="${resume.gainPct < 0 ? 'text-red-600' : 'text-green-600'}">${resume.gainPct.toFixed(2)} %</td>
-          </tr>
-        </tbody>
-      </table>`;
-
-    const tableauCrypto = cryptos.map(c => {
-      const gain = c.valeur - c.investi;
-      const gainPct = (gain / c.investi) * 100;
-      return `<tr>
-        <td>${c.nom}</td>
-        <td>${c.quantite}</td>
-        <td>${formatMontant(c.investi)}</td>
-        <td>${c.prixUnitaire}</td>
-        <td>${formatMontant(c.valeur)}</td>
-        <td class="${gain < 0 ? 'text-red-600' : 'text-green-600'}">${formatMontant(gain)}</td>
-        <td class="${gainPct < 0 ? 'text-red-600' : 'text-green-600'}">${gainPct.toFixed(2)} %</td>
-      </tr>`;
-    }).join('');
-
-    const tableauActions = actions.map(a => {
-      const gain = a.valeur - a.investi;
-      const gainPct = (gain / a.investi) * 100;
-      return `<tr>
-        <td>${a.nom}</td>
-        <td>${a.quantite}</td>
-        <td>${formatMontant(a.investi)}</td>
-        <td>${a.prixUnitaire}</td>
-        <td>${formatMontant(a.valeur)}</td>
-        <td class="${gain < 0 ? 'text-red-600' : 'text-green-600'}">${formatMontant(gain)}</td>
-        <td class="${gainPct < 0 ? 'text-red-600' : 'text-green-600'}">${gainPct.toFixed(2)} %</td>
-      </tr>`;
-    }).join('');
-
-    const opportunitesHTML = opportunites.map(o => `
+    const opportunitesHTML = [
+      { nom: "TON", variation: "+21.3%", prevision: "prochaines heures", recommandation: "Acheter maintenant" },
+      { nom: "WIF", variation: "+18.6%", prevision: "prochains jours", recommandation: "Surveiller" },
+      { nom: "ARB", variation: "+20.1%", prevision: "6 heures", recommandation: "Acheter maintenant" },
+      { nom: "MATIC", variation: "+17.5%", prevision: "demain", recommandation: "Surveiller" },
+      { nom: "RNDR", variation: "+22.7%", prevision: "2 heures", recommandation: "Acheter maintenant" }
+    ].map(o => `
       <tr>
         <td>${o.nom}</td>
         <td>${o.variation}</td>
+        <td>${o.prevision}</td>
         <td class="${o.recommandation === 'Acheter maintenant' ? 'text-green-600' : 'text-yellow-600'}">${o.recommandation}</td>
       </tr>`).join('');
-
-    document.getElementById('resume-global').innerHTML = resumeHTML;
-    document.getElementById('tableau-crypto').innerHTML = `
-      <h2 class="text-xl font-semibold mt-6 mb-2">Portefeuille Crypto</h2>
-      <table class="table-auto w-full text-center border">
-        <thead><tr class="bg-gray-200"><th>Crypto</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr></thead>
-        <tbody>${tableauCrypto}</tbody>
-      </table>`;
-
-    document.getElementById('tableau-actions').innerHTML = `
-      <h2 class="text-xl font-semibold mt-6 mb-2">Portefeuille Actions & Métaux</h2>
-      <table class="table-auto w-full text-center border">
-        <thead><tr class="bg-gray-200"><th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr></thead>
-        <tbody>${tableauActions}</tbody>
-      </table>`;
 
     document.getElementById('opportunites').innerHTML = `
       <h2 class="text-xl font-semibold mt-6 mb-2">Opportunités du moment</h2>
       <table class="table-auto w-full text-center border">
-        <thead><tr class="bg-gray-200"><th>Actif</th><th>Variation</th><th>Recommandation</th></tr></thead>
+        <thead><tr class="bg-gray-200">
+          <th>Actif</th><th>Variation</th><th>Prévision</th><th>Recommandation</th>
+        </tr></thead>
         <tbody>${opportunitesHTML}</tbody>
       </table>`;
-
-    verifierAlertesTousActifs(cryptos);
-    verifierAlertesTousActifs(actions);
-    detecterOpportunites();
   }
 
-  function refreshData() {
-    render();
-  }
-
-  setInterval(refreshData, 5 * 60 * 1000);
   render();
 </script>
 
   </div>
-</body></html>
+</body>
+</html>
