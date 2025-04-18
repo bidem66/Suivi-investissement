@@ -1,26 +1,21 @@
 <!DOCTYPE html><html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suivi Investissement</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suivi investissement</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #fdfdfd; color: #000; padding: 20px; }
-    h2, h3 { margin-top: 30px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; }
-    th { background-color: #f2f2f2; }
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 1rem; }
+    h2 { color: #222; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
+    th { background: #eee; }
     .gain { color: green; }
     .perte { color: red; }
-    .alerte { background-color: #ffdada; color: red; padding: 10px; margin-bottom: 20px; font-weight: bold; }
-    .bouton { padding: 10px 20px; background-color: #eee; border: none; cursor: pointer; margin-bottom: 20px; }
-    .bouton:hover { background-color: #ddd; }
+    .alerte { background-color: #ffe5e5; color: darkred; padding: 10px; margin: 1rem 0; font-weight: bold; }
+    #refresh-btn { margin-top: 1rem; }
   </style>
-</head>
-<body>
-  <h2>Suivi investissement</h2>
-  <button class="bouton" onclick="rafraichirDonnees()">Actualiser les données</button>  <div id="contenu">
-    <h3>Chargement en cours...</h3>
-  </div>  <!-- Notifications push OneSignal -->  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>  <script>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       await OneSignal.init({
@@ -30,65 +25,39 @@
         subdomainName: "pushbidm"
       });
     });
-  </script>  <script>
-    async function rafraichirDonnees() {
-      const container = document.getElementById("contenu");
-      container.innerHTML = "<h3>Mise à jour des données...</h3>";
-      try {
-        // Exemple d'appel fictif aux APIs. 
-        // En version finale, remplace ceci par les appels CoinGecko + Yahoo Finance
-        const prixCrypto = {
-          solana: 186.24,
-          chainlink: 17.32,
-          cardano: 0.8531,
-          polkadot: 5.03,
-          "avalanche-2": 26.39,
-          pepe: 0,
-          ethereum: 1582.33
-        };
-
-        const prixActions = {
-          NVDA: 113.83,
-          GLD: 297.00,
-          STLA: 9.51
-        };
-
-        // Mise à jour statique des tableaux (répliquer dynamiquement en version API)
-        container.innerHTML = `
-          <h3>Résumé global</h3>
-          <table>
-            <tr><th>Total investi</th><th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th></tr>
-            <tr><td>1163.00 $</td><td>1146.09 $</td><td class="perte">-16.91 $</td><td class="perte">-1.45 %</td></tr>
-          </table>
-
-          <h3>Portefeuille Crypto</h3>
-          <table>
-            <tr><th>Crypto</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr>
-            <tr><td>SOLANA</td><td>0.988</td><td>180.00 $</td><td>${prixCrypto.solana.toFixed(2)} CAD</td><td>184.01 $</td><td class="gain">4.01 $</td><td class="gain">2.23 %</td></tr>
-            <tr><td>CHAINLINK</td><td>4.94</td><td>90.00 $</td><td>${prixCrypto.chainlink.toFixed(2)} CAD</td><td>85.56 $</td><td class="perte">-4.44 $</td><td class="perte">-4.93 %</td></tr>
-            <tr><td>CARDANO</td><td>89.62</td><td>75.00 $</td><td>${prixCrypto.cardano.toFixed(4)} CAD</td><td>76.46 $</td><td class="gain">1.46 $</td><td class="gain">1.94 %</td></tr>
-            <tr><td>POLKADOT</td><td>13.37</td><td>65.00 $</td><td>${prixCrypto.polkadot.toFixed(2)} CAD</td><td>67.25 $</td><td class="gain">2.25 $</td><td class="gain">3.46 %</td></tr>
-            <tr><td>AVALANCHE</td><td>1.7365</td><td>45.00 $</td><td>${prixCrypto["avalanche-2"].toFixed(2)} CAD</td><td>45.83 $</td><td class="gain">0.83 $</td><td class="gain">1.84 %</td></tr>
-            <tr><td>PEPE</td><td>2,892,752.9</td><td>30.00 $</td><td>0.0000 CAD</td><td>28.99 $</td><td class="perte">-1.01 $</td><td class="perte">-3.38 %</td></tr>
-            <tr><td>ETHEREUM (USD)</td><td>0.043058</td><td>96.65 $</td><td>${prixCrypto.ethereum.toFixed(2)} USD</td><td>68.13 $</td><td class="perte">-28.52 $</td><td class="perte">-29.51 %</td></tr>
-          </table>
-          <div class="alerte">ETHEREUM : Danger de crash – Vendre immédiatement.</div>
-
-          <h3>Portefeuille Actions & Métaux</h3>
-          <table>
-            <tr><th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr>
-            <tr><td>NVDA</td><td>0.777</td><td>88.46 $</td><td>${prixActions.NVDA.toFixed(2)} USD</td><td>81.65 $</td><td class="perte">-6.81 $</td><td class="perte">-7.70 %</td></tr>
-            <tr><td>GLD</td><td>0.202</td><td>59.99 $</td><td>${prixActions.GLD.toFixed(2)} USD</td><td>60.60 $</td><td class="gain">+0.61 $</td><td class="gain">+1.02 %</td></tr>
-            <tr><td>STLA</td><td>7</td><td>63.56 $</td><td>${prixActions.STLA.toFixed(2)} USD</td><td>66.57 $</td><td class="gain">+3.01 $</td><td class="gain">+4.74 %</td></tr>
-          </table>
-        `;
-      } catch (e) {
-        container.innerHTML = '<p style="color:red">Erreur de chargement des données.</p>';
-      }
+  </script>
+</head>
+<body>
+  <h2>Suivi investissement</h2>
+  <button id="refresh-btn" onclick="updateData()">Actualiser les données</button>
+  <h3>Résumé global</h3>
+  <table>
+    <tr><th>Total investi</th><th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th></tr>
+    <tr><td>1163.00 $</td><td>1146.09 $</td><td class="perte">-16.91 $</td><td class="perte">-1.45 %</td></tr>
+  </table>  <h3>Portefeuille Crypto</h3>
+  <table>
+    <tr><th>Crypto</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr>
+    <tr><td>SOLANA</td><td>0.988</td><td>180.00 $</td><td>186.24 CAD</td><td>184.01 $</td><td class="gain">4.01 $</td><td class="gain">2.23 %</td></tr>
+    <tr><td>CHAINLINK</td><td>4.94</td><td>90.00 $</td><td>17.32 CAD</td><td>85.56 $</td><td class="perte">-4.44 $</td><td class="perte">-4.93 %</td></tr>
+    <tr><td>CARDANO</td><td>89.62</td><td>75.00 $</td><td>0.8531 CAD</td><td>76.46 $</td><td class="gain">1.46 $</td><td class="gain">1.94 %</td></tr>
+    <tr><td>POLKADOT</td><td>13.37</td><td>65.00 $</td><td>5.03 CAD</td><td>67.25 $</td><td class="gain">2.25 $</td><td class="gain">3.46 %</td></tr>
+    <tr><td>AVALANCHE</td><td>1.7365</td><td>45.00 $</td><td>26.39 CAD</td><td>45.83 $</td><td class="gain">0.83 $</td><td class="gain">1.84 %</td></tr>
+    <tr><td>PEPE</td><td>2,892,752.9</td><td>30.00 $</td><td>0.0000 CAD</td><td>28.99 $</td><td class="perte">-1.01 $</td><td class="perte">-3.38 %</td></tr>
+    <tr><td>ETHEREUM (USD)</td><td>0.043058</td><td>96.65 $</td><td>1582.33 USD</td><td>68.13 $</td><td class="perte">-28.52 $</td><td class="perte">-29.51 %</td></tr>
+  </table>
+  <div class="alerte">ETHEREUM : Danger de crash – Vendre immédiatement.</div>  <h3>Portefeuille Actions & Métaux</h3>
+  <table>
+    <tr><th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr>
+    <tr><td>NVDA</td><td>0.777</td><td>88.46 $</td><td>113.83 USD</td><td>81.65 $</td><td class="perte">-6.81 $</td><td class="perte">-7.70 %</td></tr>
+    <tr><td>GLD</td><td>0.202</td><td>59.99 $</td><td>297.00 USD</td><td>60.60 $</td><td class="gain">+0.61 $</td><td class="gain">+1.02 %</td></tr>
+    <tr><td>STLA</td><td>7</td><td>63.56 $</td><td>9.51 USD</td><td>66.57 $</td><td class="gain">+3.01 $</td><td class="gain">+4.74 %</td></tr>
+    <tr><td>CRM</td><td>0.658</td><td>82.01 $</td><td>124.6 USD</td><td>80.15 $</td><td class="perte">-1.86 $</td><td class="perte">-2.27 %</td></tr>
+    <tr><td>TSLA</td><td>0.419</td><td>101.84 $</td><td>243.0 USD</td><td>99.42 $</td><td class="perte">-2.42 $</td><td class="perte">-2.37 %</td></tr>
+    <tr><td>SLV</td><td>1</td><td>29.45 $</td><td>29.45 USD</td><td>30.10 $</td><td class="gain">+0.65 $</td><td class="gain">+2.21 %</td></tr>
+  </table>  <script>
+    function updateData() {
+      location.reload();
     }
-
-    // Rafraichissement auto chaque 5 min
-    setInterval(rafraichirDonnees, 300000);
-    window.onload = rafraichirDonnees;
+    setInterval(updateData, 5 * 60 * 1000); // 5 minutes
   </script></body>
 </html>
