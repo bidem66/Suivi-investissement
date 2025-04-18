@@ -1,12 +1,12 @@
-<!DOCTYPE html><html lang="fr"><head>
+<!DOCTYPE html><html lang="fr">
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suivi investissement</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function (OneSignal) {
+    OneSignalDeferred.push(async function(OneSignal) {
       await OneSignal.init({
         appId: "c5bd46ca-82c9-4493-b9a7-3813d3eccd03",
         safari_web_id: "web.onesignal.auto.21eb64f1-a307-4b53-9fa9-5af0b410a31b",
@@ -16,91 +16,88 @@
     });
   </script>
   <style>
-    table {
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-    th, td {
-      padding: 0.75rem;
-    }
-    tr:nth-child(even) {
-      background-color: #f9fafb;
-    }
-    th {
-      background-color: #e5e7eb;
-      font-weight: 600;
-    }
-    .fl-arrow-up::before {
-      content: "\2191 ";
-      color: green;
-    }
-    .fl-arrow-down::before {
-      content: "\2193 ";
-      color: red;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; color: #222; }
+    h2 { margin-top: 30px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .gain { color: green; }
+    .perte { color: red; }
+    .alerte { background: #ffe5e5; padding: 10px; color: darkred; font-weight: bold; margin-bottom: 20px; }
+    .bouton { padding: 10px 20px; background: royalblue; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .bouton:hover { background: navy; }
+    .actualisation { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+    form { margin-top: 20px; }
+    form input { margin: 5px; padding: 5px; }
   </style>
-</head><body class="bg-gray-50 text-gray-900">
-  <div class="max-w-6xl mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6 text-center">Suivi investissement</h1>
-    <div class="flex justify-between items-center mb-4">
-      <div id="maj-info" class="text-sm text-gray-500">Prochaine mise à jour automatique dans 5 min</div>
-      <button onclick="refreshData(true)" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded shadow hover:bg-blue-700">Actualiser maintenant</button>
-    </div>
-    <div id="alert-refresh" class="hidden mb-4 text-green-600 font-medium">Données mises à jour avec succès</div><section id="resume-global" class="mb-8"></section>
-<section id="tableau-crypto" class="mb-8"></section>
-<section id="tableau-actions" class="mb-8"></section>
-<section id="opportunites"></section>
+</head>
+<body>
+  <h1>Suivi investissement</h1>  <div class="actualisation">
+    <div>Prochaine mise à jour automatique dans 5 min</div>
+    <button class="bouton" onclick="actualiserManuellement()">Actualiser maintenant</button>
+  </div>  <!-- FORMULAIRE D'AJOUT D'ACTIF -->  <h2>Ajouter un actif</h2>
+  <form onsubmit="ajouterActif(event)">
+    <input type="text" id="symbol" placeholder="Symbole (ex: BTC ou AAPL)" required>
+    <input type="number" id="quantite" step="any" placeholder="Quantité" required>
+    <input type="number" id="investi" step="any" placeholder="Montant investi ($)" required>
+    <button type="submit" class="bouton">Ajouter</button>
+  </form>  <!-- FORMULAIRE DE SUPPRESSION D'ACTIF -->  <h2>Supprimer un actif</h2>
+  <form onsubmit="supprimerActif(event)">
+    <input type="text" id="symbolSupprimer" placeholder="Symbole (ex: BTC ou AAPL)" required>
+    <button type="submit" class="bouton" style="background:red">Supprimer</button>
+  </form>  <!-- ZONE POUR AJOUT DYNAMIQUE DES ACTIFS -->  <div id="zoneActifsAjoutes"></div>  <script>
+    // Mise à jour automatique toutes les 5 minutes
+    setInterval(() => {
+      location.reload();
+    }, 300000);
 
-<script>
-  function formatMontant(valeur) {
-    return valeur.toFixed(2) + ' $';
-  }
-
-  function formatGainPct(valeur) {
-    const arrow = valeur >= 0 ? 'fl-arrow-up' : 'fl-arrow-down';
-    return `<span class="${arrow}">${Math.abs(valeur).toFixed(2)} %</span>`;
-  }
-
-  function refreshData(fromButton = false) {
-    render();
-    if (fromButton) {
-      const alert = document.getElementById("alert-refresh");
-      alert.classList.remove("hidden");
-      setTimeout(() => alert.classList.add("hidden"), 2500);
+    function actualiserManuellement() {
+      location.reload();
     }
-  }
 
-  setInterval(() => refreshData(), 5 * 60 * 1000);
+    async function ajouterActif(event) {
+      event.preventDefault();
+      const symbole = document.getElementById('symbol').value.trim().toUpperCase();
+      const quantite = parseFloat(document.getElementById('quantite').value);
+      const investi = parseFloat(document.getElementById('investi').value);
 
-  function render() {
-    const opportunitesHTML = [
-      { nom: "TON", variation: "+21.3%", prevision: "prochaines heures", recommandation: "Acheter maintenant" },
-      { nom: "WIF", variation: "+18.6%", prevision: "prochains jours", recommandation: "Surveiller" },
-      { nom: "ARB", variation: "+20.1%", prevision: "6 heures", recommandation: "Acheter maintenant" },
-      { nom: "MATIC", variation: "+17.5%", prevision: "demain", recommandation: "Surveiller" },
-      { nom: "RNDR", variation: "+22.7%", prevision: "2 heures", recommandation: "Acheter maintenant" }
-    ].map(o => `
-      <tr>
-        <td>${o.nom}</td>
-        <td>${o.variation}</td>
-        <td>${o.prevision}</td>
-        <td class="${o.recommandation === 'Acheter maintenant' ? 'text-green-600' : 'text-yellow-600'}">${o.recommandation}</td>
-      </tr>`).join('');
+      if (!symbole || isNaN(quantite) || isNaN(investi)) return;
 
-    document.getElementById('opportunites').innerHTML = `
-      <h2 class="text-xl font-semibold mt-6 mb-2">Opportunités du moment</h2>
-      <table class="table-auto w-full text-center border">
-        <thead><tr class="bg-gray-200">
-          <th>Actif</th><th>Variation</th><th>Prévision</th><th>Recommandation</th>
-        </tr></thead>
-        <tbody>${opportunitesHTML}</tbody>
-      </table>`;
-  }
+      const isCrypto = /^[A-Z]{2,5}$/.test(symbole); // simple regex test
+      let url, prix = 0;
 
-  render();
-</script>
+      try {
+        if (isCrypto) {
+          url = `https://api.coingecko.com/api/v3/simple/price?ids=${symbole.toLowerCase()}&vs_currencies=cad`;
+          const res = await fetch(url);
+          const data = await res.json();
+          prix = data[symbole.toLowerCase()].cad;
+        } else {
+          url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbole}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          prix = data.quoteResponse.result[0].regularMarketPrice;
+        }
+        const valeur = (prix * quantite).toFixed(2);
+        const variation = (valeur - investi).toFixed(2);
+        const variationPct = ((variation / investi) * 100).toFixed(2);
 
-  </div>
-</body>
+        const ligne = `<table><tr><th>Symbole</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur</th><th>Gain $</th><th>Gain %</th></tr>
+<tr><td>${symbole}</td><td>${quantite}</td><td>${investi.toFixed(2)} $</td><td>${prix} ${isCrypto ? 'CAD' : 'USD'}</td><td>${valeur} $</td><td class="${variation >= 0 ? 'gain' : 'perte'}">${variation} $</td><td class="${variation >= 0 ? 'gain' : 'perte'}">${variationPct} %</td></tr></table>`;
+        document.getElementById('zoneActifsAjoutes').innerHTML += ligne;
+      } catch (e) {
+        alert("Erreur lors de la récupération des données pour " + symbole);
+      }
+    }
+
+    function supprimerActif(event) {
+      event.preventDefault();
+      const symbole = document.getElementById('symbolSupprimer').value.trim().toUpperCase();
+      const zone = document.getElementById('zoneActifsAjoutes');
+      const tables = zone.querySelectorAll('table');
+      tables.forEach(table => {
+        if (table.innerHTML.includes(symbole)) table.remove();
+      });
+    }
+  </script></body>
 </html>
