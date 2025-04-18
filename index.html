@@ -1,63 +1,128 @@
-<!DOCTYPE html><html lang="fr">
-<head>
+<!DOCTYPE html><html lang="fr"><head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suivi investissement</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 1rem; }
-    h2 { color: #222; }
-    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
-    th { background: #eee; }
-    .gain { color: green; }
-    .perte { color: red; }
-    .alerte { background-color: #ffe5e5; color: darkred; padding: 10px; margin: 1rem 0; font-weight: bold; }
-    #refresh-btn { margin-top: 1rem; }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
+    OneSignalDeferred.push(async function (OneSignal) {
       await OneSignal.init({
         appId: "c5bd46ca-82c9-4493-b9a7-3813d3eccd03",
         safari_web_id: "web.onesignal.auto.21eb64f1-a307-4b53-9fa9-5af0b410a31b",
-        notifyButton: { enable: true },
-        subdomainName: "pushbidm"
+        notifyButton: {
+          enable: true,
+        },
+        subdomainName: "pushbidm",
       });
     });
   </script>
-</head>
-<body>
-  <h2>Suivi investissement</h2>
-  <button id="refresh-btn" onclick="updateData()">Actualiser les données</button>
-  <h3>Résumé global</h3>
-  <table>
-    <tr><th>Total investi</th><th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th></tr>
-    <tr><td>1163.00 $</td><td>1146.09 $</td><td class="perte">-16.91 $</td><td class="perte">-1.45 %</td></tr>
-  </table>  <h3>Portefeuille Crypto</h3>
-  <table>
-    <tr><th>Crypto</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr>
-    <tr><td>SOLANA</td><td>0.988</td><td>180.00 $</td><td>186.24 CAD</td><td>184.01 $</td><td class="gain">4.01 $</td><td class="gain">2.23 %</td></tr>
-    <tr><td>CHAINLINK</td><td>4.94</td><td>90.00 $</td><td>17.32 CAD</td><td>85.56 $</td><td class="perte">-4.44 $</td><td class="perte">-4.93 %</td></tr>
-    <tr><td>CARDANO</td><td>89.62</td><td>75.00 $</td><td>0.8531 CAD</td><td>76.46 $</td><td class="gain">1.46 $</td><td class="gain">1.94 %</td></tr>
-    <tr><td>POLKADOT</td><td>13.37</td><td>65.00 $</td><td>5.03 CAD</td><td>67.25 $</td><td class="gain">2.25 $</td><td class="gain">3.46 %</td></tr>
-    <tr><td>AVALANCHE</td><td>1.7365</td><td>45.00 $</td><td>26.39 CAD</td><td>45.83 $</td><td class="gain">0.83 $</td><td class="gain">1.84 %</td></tr>
-    <tr><td>PEPE</td><td>2,892,752.9</td><td>30.00 $</td><td>0.0000 CAD</td><td>28.99 $</td><td class="perte">-1.01 $</td><td class="perte">-3.38 %</td></tr>
-    <tr><td>ETHEREUM (USD)</td><td>0.043058</td><td>96.65 $</td><td>1582.33 USD</td><td>68.13 $</td><td class="perte">-28.52 $</td><td class="perte">-29.51 %</td></tr>
-  </table>
-  <div class="alerte">ETHEREUM : Danger de crash – Vendre immédiatement.</div>  <h3>Portefeuille Actions & Métaux</h3>
-  <table>
-    <tr><th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr>
-    <tr><td>NVDA</td><td>0.777</td><td>88.46 $</td><td>113.83 USD</td><td>81.65 $</td><td class="perte">-6.81 $</td><td class="perte">-7.70 %</td></tr>
-    <tr><td>GLD</td><td>0.202</td><td>59.99 $</td><td>297.00 USD</td><td>60.60 $</td><td class="gain">+0.61 $</td><td class="gain">+1.02 %</td></tr>
-    <tr><td>STLA</td><td>7</td><td>63.56 $</td><td>9.51 USD</td><td>66.57 $</td><td class="gain">+3.01 $</td><td class="gain">+4.74 %</td></tr>
-    <tr><td>CRM</td><td>0.658</td><td>82.01 $</td><td>124.6 USD</td><td>80.15 $</td><td class="perte">-1.86 $</td><td class="perte">-2.27 %</td></tr>
-    <tr><td>TSLA</td><td>0.419</td><td>101.84 $</td><td>243.0 USD</td><td>99.42 $</td><td class="perte">-2.42 $</td><td class="perte">-2.37 %</td></tr>
-    <tr><td>SLV</td><td>1</td><td>29.45 $</td><td>29.45 USD</td><td>30.10 $</td><td class="gain">+0.65 $</td><td class="gain">+2.21 %</td></tr>
-  </table>  <script>
-    function updateData() {
-      location.reload();
-    }
-    setInterval(updateData, 5 * 60 * 1000); // 5 minutes
-  </script></body>
-</html>
+</head><body class="bg-gray-50 text-gray-900">
+  <div class="max-w-4xl mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Suivi investissement</h1>
+    <button onclick="refreshData()" class="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Actualiser les données</button><section id="resume-global"></section>
+<section id="tableau-crypto"></section>
+<section id="tableau-actions"></section>
+
+<script>
+  const data = {
+    resume: {
+      investi: 1163.00,
+      valeurActuelle: 1146.09,
+      gain: -16.91,
+      gainPct: -1.45
+    },
+    cryptos: [
+      { nom: "SOLANA", quantite: 0.988, investi: 180, prixUnitaire: "186.24 CAD", valeur: 184.01 },
+      { nom: "CHAINLINK", quantite: 4.94, investi: 90, prixUnitaire: "17.32 CAD", valeur: 85.56 },
+      { nom: "CARDANO", quantite: 89.62, investi: 75, prixUnitaire: "0.8531 CAD", valeur: 76.46 },
+      { nom: "POLKADOT", quantite: 13.37, investi: 65, prixUnitaire: "5.03 CAD", valeur: 67.25 },
+      { nom: "AVALANCHE", quantite: 1.7365, investi: 45, prixUnitaire: "26.39 CAD", valeur: 45.83 },
+      { nom: "PEPE", quantite: 2892752.9, investi: 30, prixUnitaire: "0.0000 CAD", valeur: 28.99 },
+      { nom: "ETHEREUM (USD)", quantite: 0.043058, investi: 96.65, prixUnitaire: "1582.33 USD", valeur: 68.13 }
+    ],
+    actions: [
+      { nom: "NVDA", quantite: 0.777, investi: 88.46, prixUnitaire: "113.83 USD", valeur: 81.65 },
+      { nom: "GLD", quantite: 0.202, investi: 59.99, prixUnitaire: "297.00 USD", valeur: 60.60 },
+      { nom: "STLA", quantite: 7, investi: 63.56, prixUnitaire: "9.51 USD", valeur: 66.57 },
+      { nom: "CRM", quantite: 0.658, investi: 82.01, prixUnitaire: "124.6 USD", valeur: 80.15 },
+      { nom: "TSLA", quantite: 0.419, investi: 101.84, prixUnitaire: "243.0 USD", valeur: 99.42 },
+      { nom: "SLV", quantite: 1, investi: 29.45, prixUnitaire: "29.45 USD", valeur: 30.10 }
+    ]
+  };
+
+  function formatMontant(valeur) {
+    return valeur.toFixed(2) + ' $';
+  }
+
+  function render() {
+    const { resume, cryptos, actions } = data;
+
+    const resumeHTML = `
+      <h2 class="text-xl font-semibold mb-2">Résumé global</h2>
+      <table class="table-auto w-full text-center border">
+        <thead><tr class="bg-gray-200"><th>Total investi</th><th>Valeur actuelle</th><th>Gain / Perte $</th><th>Gain / Perte %</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>${formatMontant(resume.investi)}</td>
+            <td>${formatMontant(resume.valeurActuelle)}</td>
+            <td class="${resume.gain < 0 ? 'text-red-600' : 'text-green-600'}">${formatMontant(resume.gain)}</td>
+            <td class="${resume.gainPct < 0 ? 'text-red-600' : 'text-green-600'}">${resume.gainPct.toFixed(2)} %</td>
+          </tr>
+        </tbody>
+      </table>`;
+
+    const tableauCrypto = cryptos.map(c => {
+      const gain = c.valeur - c.investi;
+      const gainPct = (gain / c.investi) * 100;
+      return `<tr>
+        <td>${c.nom}</td>
+        <td>${c.quantite}</td>
+        <td>${formatMontant(c.investi)}</td>
+        <td>${c.prixUnitaire}</td>
+        <td>${formatMontant(c.valeur)}</td>
+        <td class="${gain < 0 ? 'text-red-600' : 'text-green-600'}">${formatMontant(gain)}</td>
+        <td class="${gainPct < 0 ? 'text-red-600' : 'text-green-600'}">${gainPct.toFixed(2)} %</td>
+      </tr>`;
+    }).join('');
+
+    const tableauActions = actions.map(a => {
+      const gain = a.valeur - a.investi;
+      const gainPct = (gain / a.investi) * 100;
+      return `<tr>
+        <td>${a.nom}</td>
+        <td>${a.quantite}</td>
+        <td>${formatMontant(a.investi)}</td>
+        <td>${a.prixUnitaire}</td>
+        <td>${formatMontant(a.valeur)}</td>
+        <td class="${gain < 0 ? 'text-red-600' : 'text-green-600'}">${formatMontant(gain)}</td>
+        <td class="${gainPct < 0 ? 'text-red-600' : 'text-green-600'}">${gainPct.toFixed(2)} %</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('resume-global').innerHTML = resumeHTML;
+    document.getElementById('tableau-crypto').innerHTML = `
+      <h2 class="text-xl font-semibold mt-6 mb-2">Portefeuille Crypto</h2>
+      <table class="table-auto w-full text-center border">
+        <thead><tr class="bg-gray-200"><th>Crypto</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr></thead>
+        <tbody>${tableauCrypto}</tbody>
+      </table>`;
+
+    document.getElementById('tableau-actions').innerHTML = `
+      <h2 class="text-xl font-semibold mt-6 mb-2">Portefeuille Actions & Métaux</h2>
+      <table class="table-auto w-full text-center border">
+        <thead><tr class="bg-gray-200"><th>Action</th><th>Quantité</th><th>Investi</th><th>Prix unitaire</th><th>Valeur actuelle</th><th>Gain $</th><th>Gain %</th></tr></thead>
+        <tbody>${tableauActions}</tbody>
+      </table>`;
+  }
+
+  function refreshData() {
+    render();
+  }
+
+  setInterval(refreshData, 5 * 60 * 1000);
+  render();
+</script>
+
+  </div>
+</body></html>
