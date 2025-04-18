@@ -20,14 +20,15 @@
     .form-inline input, .form-inline select, .form-inline button { padding: 6px; }
     .reco { font-weight: bold; }
     #lastUpdate { text-align: center; font-size: 0.9em; margin-bottom: 20px; color: #555; }
-    @media (max-width: 600px) { .form-inline { flex-direction: column; } }
+    @media (max-width: 600px) {
+      .form-inline { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Suivi de Portefeuille Automatisé (Temps Réel)</h1>
-    <button id="refreshNow" class="btn btn-refresh">Actualiser maintenant</button><!-- Formulaire Ajout/Suppression -->
-<div class="form-inline">
+    <button id="refreshNow" class="btn btn-refresh">Actualiser maintenant</button><div class="form-inline">
   <select id="typeAsset">
     <option value="crypto">Crypto (CAD)</option>
     <option value="action">Action/Métal (USD)</option>
@@ -39,77 +40,60 @@
   <button id="removeAsset" class="btn">Supprimer</button>
 </div>
 
-<!-- Section Résumé Global -->
 <div id="resumeGlobal"></div>
 <div id="lastUpdate"></div>
 
-<!-- Tableaux Crypto & Actions -->
 <h2>Cryptos (CAD)</h2>
 <table id="tableCrypto">
-  <thead>
-    <tr>
-      <th>Symbole</th><th>Quantité</th><th>Investi</th><th>Prix Achat</th>
-      <th>Valeur Actuelle</th><th>Gain/Perte</th><th>%</th><th>Reco</th>
-    </tr>
-  </thead>
+  <thead><tr><th>Symbole</th><th>Quantité</th><th>Investi</th><th>Prix Achat</th><th>Valeur Actuelle</th><th>Gain/Perte</th><th>%</th><th>Reco</th></tr></thead>
   <tbody></tbody>
 </table>
 
 <h2>Actions / Métaux (USD)</h2>
 <table id="tableAction">
-  <thead>
-    <tr>
-      <th>Symbole</th><th>Quantité</th><th>Investi</th><th>Prix Achat</th>
-      <th>Valeur Actuelle</th><th>Gain/Perte</th><th>%</th><th>Reco</th>
-    </tr>
-  </thead>
+  <thead><tr><th>Symbole</th><th>Quantité</th><th>Investi</th><th>Prix Achat</th><th>Valeur Actuelle</th><th>Gain/Perte</th><th>%</th><th>Reco</th></tr></thead>
   <tbody></tbody>
 </table>
 
-<!-- Top Opportunités -->
 <h2>Top Opportunités ≥20% (24h)</h2>
 <table id="tableTop">
-  <thead>
-    <tr><th>Actif</th><th>Variation (%)</th><th>Délai</th></tr>
-  </thead>
+  <thead><tr><th>Actif</th><th>Variation (%)</th><th>Délai</th></tr></thead>
   <tbody></tbody>
 </table>
 
-<!-- OneSignal Init -->
 <script>
+  // OneSignal init
   window.OneSignal = window.OneSignal || [];
   OneSignal.push(function() {
     OneSignal.init({ appId: "VOTRE_APP_ID_ONESIGNAL" });
   });
-</script>
 
-<script>
-  // Portefeuille par défaut
+  // Portfolio par défaut
   const defaultPortfolio = [
     { type: 'action', sym: 'GLD', qty: 0.2022, inv: 59.99 },
     { type: 'action', sym: 'SLV', qty: 1.0, inv: 29.45 },
     { type: 'action', sym: 'CRM', qty: 0.2271, inv: 57.97 },
     { type: 'action', sym: 'TSLA', qty: 0.2822, inv: 72.00 },
     { type: 'action', sym: 'NVDA', qty: 0.7767, inv: 86.96 },
-    { type: 'crypto', sym: 'sol', qty: 0.988, inv: 180.00 },
-    { type: 'crypto', sym: 'link', qty: 4.9401, inv: 90.00 },
-    { type: 'crypto', sym: 'ada', qty: 89.6204, inv: 80.00 },
-    { type: 'crypto', sym: 'dot', qty: 13.3732, inv: 70.00 },
-    { type: 'crypto', sym: 'avax', qty: 1.7365, inv: 50.00 },
+    { type: 'crypto', sym: 'bitcoin', qty: 0.988, inv: 180.00 },
+    { type: 'crypto', sym: 'chainlink', qty: 4.9401, inv: 90.00 },
+    { type: 'crypto', sym: 'cardano', qty: 89.6204, inv: 80.00 },
+    { type: 'crypto', sym: 'polkadot', qty: 13.3732, inv: 70.00 },
+    { type: 'crypto', sym: 'avalanche-2', qty: 1.7365, inv: 50.00 },
     { type: 'crypto', sym: 'pepe', qty: 2.89275, inv: 30.00 }
   ];
 
-  // Charger portefeuille
+  // Chargement du portefeuille
   let portfolio = JSON.parse(localStorage.getItem('portfolio'));
   if (!Array.isArray(portfolio) || portfolio.length === 0) {
     portfolio = defaultPortfolio;
     localStorage.setItem('portfolio', JSON.stringify(portfolio));
   }
 
-  // Éléments DOM
+  // DOM nodes
   const tableCryptoBody = document.querySelector('#tableCrypto tbody');
   const tableActionBody = document.querySelector('#tableAction tbody');
-  const tableTopBody = document.querySelector('#tableTop tbody');
+  const tableTopBody    = document.querySelector('#tableTop tbody');
 
   document.getElementById('addAsset').addEventListener('click', () => modifyAsset(true));
   document.getElementById('removeAsset').addEventListener('click', () => modifyAsset(false));
@@ -126,8 +110,7 @@
       if (!qty || !inv) return alert('Quantité et montant investi requis');
       const idx = portfolio.findIndex(a => a.type === type && a.sym === sym);
       const entry = { type, sym, qty, inv };
-      if (idx > -1) portfolio[idx] = entry;
-      else portfolio.push(entry);
+      if (idx > -1) portfolio[idx] = entry; else portfolio.push(entry);
     } else {
       portfolio = portfolio.filter(a => !(a.type === type && a.sym === sym));
     }
@@ -135,93 +118,91 @@
     refreshAll();
   }
 
-  // API fetchers
+  // Fetchers avec try/catch
   async function fetchCrypto(sym) {
-    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(sym)}&vs_currencies=cad&include_24hr_change=true`);
-    return res.json();
+    try {
+      const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(sym)}&vs_currencies=cad&include_24hr_change=true`);
+      return await res.json();
+    } catch (e) {
+      console.error('Crypto fetch error', sym, e);
+      return {};
+    }
   }
   async function fetchAction(sym) {
-    const res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${sym}`);
-    const json = await res.json();
-    return (json.quoteResponse && json.quoteResponse.result[0]) || {};
+    try {
+      const res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${sym}`);
+      const json = await res.json();
+      return (json.quoteResponse && json.quoteResponse.result[0]) || {};
+    } catch (e) {
+      console.error('Action fetch error', sym, e);
+      return {};
+    }
   }
 
+  // Rafraîchissement et affichage
   async function refreshAll() {
     tableCryptoBody.innerHTML = '';
     tableActionBody.innerHTML = '';
-    tableTopBody.innerHTML = '';
+    tableTopBody.innerHTML    = '';
 
     let totInvCAD = 0, totValCAD = 0, totInvUSD = 0, totValUSD = 0;
     const topOpportunities = [];
 
     for (const asset of portfolio) {
+      let price = 0, change = 0;
       if (asset.type === 'crypto') {
         const data = await fetchCrypto(asset.sym);
         const info = data[asset.sym] || {};
-        const price = info.cad;
-        const change24 = info.cad_24h_change;
-        if (price == null) continue;
-        const value = price * asset.qty;
-        const gain = value - asset.inv;
-        const pctGain = (gain / asset.inv * 100).toFixed(2);
-        const reco = change24 > 15 ? 'Renforcer' : (change24 < -10 ? 'Vendre' : 'Garder');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${asset.sym.toUpperCase()}</td>
-          <td>${asset.qty}</td>
-          <td>${asset.inv.toFixed(2)}</td>
-          <td>${(asset.inv / asset.qty).toFixed(2)}</td>
-          <td>${value.toFixed(2)}</td>
-          <td class="${gain >= 0 ? 'gain' : 'perte'}">${gain.toFixed(2)}</td>
-          <td class="${gain >= 0 ? 'gain' : 'perte'}">${pctGain}%</td>
-          <td class="reco">${reco}</td>
-        `;
+        price  = info.cad    ?? 0;
+        change = info.cad_24h_change ?? 0;
+      } else {
+        const info = await fetchAction(asset.sym);
+        price  = info.regularMarketPrice      ?? 0;
+        change = info.regularMarketChangePercent ?? 0;
+      }
+      const value   = price * asset.qty;
+      const gain    = value - asset.inv;
+      const pctGain = asset.inv ? ((gain / asset.inv) * 100).toFixed(2) : '0.00';
+      const reco    = change > 15 ? 'Renforcer' : (change < -10 ? 'Vendre' : 'Garder');
+
+      // Création de la ligne
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${asset.sym.toUpperCase()}</td>
+        <td>${asset.qty}</td>
+        <td>${asset.inv.toFixed(2)}</td>
+        <td>${(asset.inv / asset.qty).toFixed(2)}</td>
+        <td>${value.toFixed(2)}</td>
+        <td class="${gain >= 0 ? 'gain' : 'perte'}">${gain.toFixed(2)}</td>
+        <td class="${gain >= 0 ? 'gain' : 'perte'}">${pctGain}%</td>
+        <td class="reco">${reco}</td>
+      `;
+
+      // Ajout au bon tableau
+      if (asset.type === 'crypto') {
         tableCryptoBody.appendChild(row);
         totInvCAD += asset.inv;
         totValCAD += value;
-        if (change24 >= 20) topOpportunities.push({ sym: asset.sym.toUpperCase(), change: change24 });
-        if (change24 > 15 || change24 < -10) {
-          OneSignal.sendSelfNotification(
-            change24 > 15 ? 'Hausse forte' : 'Chute forte',
-            `${asset.sym.toUpperCase()} ${change24.toFixed(2)}% en 24h`,
-            null, null
-          );
-        }
       } else {
-        const info = await fetchAction(asset.sym);
-        const price = info.regularMarketPrice;
-        const changePct = info.regularMarketChangePercent;
-        if (price == null) continue;
-        const value = price * asset.qty;
-        const gain = value - asset.inv;
-        const pctGain = (gain / asset.inv * 100).toFixed(2);
-        const reco = changePct > 15 ? 'Renforcer' : (changePct < -10 ? 'Vendre' : 'Garder');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${asset.sym}</td>
-          <td>${asset.qty}</td>
-          <td>${asset.inv.toFixed(2)}</td>
-          <td>${(asset.inv / asset.qty).toFixed(2)}</td>
-          <td>${value.toFixed(2)}</td>
-          <td class="${gain >= 0 ? 'gain' : 'perte'}">${gain.toFixed(2)}</td>
-          <td class="${gain >= 0 ? 'gain' : 'perte'}">${pctGain}%</td>
-          <td class="reco">${reco}</td>
-        `;
         tableActionBody.appendChild(row);
         totInvUSD += asset.inv;
         totValUSD += value;
-        if (changePct >= 20) topOpportunities.push({ sym: asset.sym, change: changePct });
-        if (changePct > 15 || changePct < -10) {
-          OneSignal.sendSelfNotification(
-            changePct > 15 ? 'Hausse forte' : 'Chute forte',
-            `${asset.sym} ${changePct.toFixed(2)}% en 24h`,
-            null, null
-          );
-        }
       }
+
+      // Alarmes
+      if (change > 15 || change < -10) {
+        OneSignal.sendSelfNotification(
+          change > 15 ? 'Hausse forte' : 'Chute forte',
+          `${asset.sym.toUpperCase()} ${change.toFixed(2)}% en 24h`,
+          null, null
+        );
+      }
+
+      // Top opportunités
+      if (change >= 20) topOpportunities.push({ sym: asset.sym.toUpperCase(), change });
     }
 
-    // Affichage résumé global
+    // Affichage Résumé
     document.getElementById('resumeGlobal').innerHTML = `
       <h2>Résumé Global</h2>
       <p>Crypto : Investi ${totInvCAD.toFixed(2)} CAD, Valeur ${totValCAD.toFixed(2)} CAD, Gain ${(totValCAD - totInvCAD).toFixed(2)} CAD (${totInvCAD ? ((totValCAD - totInvCAD) / totInvCAD * 100).toFixed(2) : 0}%)</p>
@@ -229,15 +210,16 @@
     `;
     document.getElementById('lastUpdate').textContent = `Mis à jour : ${new Date().toLocaleTimeString()}`;
 
-    // Top opportunités
-    topOpportunities.sort((a, b) => b.change - a.change).slice(0, 5).forEach(o => {
-      const r = document.createElement('tr');
-      r.innerHTML = `<td>${o.sym}</td><td>${o.change.toFixed(2)}</td><td>24h</td>`;
-      tableTopBody.appendChild(r);
-    });
+    // Top opportunités ≥20%
+    topOpportunities.sort((a, b) => b.change - a.change).slice(0, 5)
+      .forEach(o => {
+        const r = document.createElement('tr');
+        r.innerHTML = `<td>${o.sym}</td><td>${o.change.toFixed(2)}</td><td>24h</td>`;
+        tableTopBody.appendChild(r);
+      });
   }
 
-  // Rafraîchissement toutes les 5 secondes
+  // Rafraîchissement rapide (5s)
   setInterval(refreshAll, 5000);
   refreshAll();
 </script>
